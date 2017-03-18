@@ -57,11 +57,11 @@ def get_dataset():
     X = df[input_fields].values
     y = df['is_default_or_late'].values
 
-    return X,y
+    return X,y,input_fields
 
 def main():
 
-    X,y = get_dataset()
+    X,y,headers = get_dataset()
 
     imp = preprocessing.Imputer(missing_values='NaN', strategy='median', axis=0)
     imp = imp.fit(X)
@@ -76,7 +76,7 @@ def main():
 
     classifier = ensemble.RandomForestClassifier(verbose=0)
     
-    parameters = {'n_estimators':[25,50,100,250,500],'max_depth':[2,5,None],'criterion':['gini','entropy']}
+    parameters = {'n_estimators':[50,100,250],'max_depth':[2,5,None],'criterion':['gini','entropy']}
     opt_classifier = grid_search.GridSearchCV(classifier,parameters,verbose=1,n_jobs=8)
 
     opt_classifier.fit(X_train,y_train)
