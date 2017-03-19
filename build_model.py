@@ -95,9 +95,13 @@ def get_credit_history_len(issue_date,earliest_date):
 
     out_list = []
 
+    import datetime    
+
     for i in xrange(len(issue_date)):
 
-        diff = issue_date[i] - earliest_date[i]
+        id = datetime.strptime(issue_date[i],'%b-%Y')
+        ed = datetime.strptime(earliest_date[i],'%b-%Y')
+        diff = id - ed
         out_list.append(diff.year)
 
     return out_list
