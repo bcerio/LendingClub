@@ -183,7 +183,7 @@ def main():
 
     classifier = ensemble.RandomForestClassifier(verbose=0)
     
-    parameters = {'n_estimators':[50,100],'max_depth':[5,10,None],'criterion':['entropy']}
+    parameters = {'n_estimators':[50,100,200],'max_depth':[5,10,15,None],'criterion':['entropy']}
     opt_classifier = grid_search.GridSearchCV(classifier,parameters,verbose=1,n_jobs=8,scoring='recall')
 
     opt_classifier.fit(X_train,y_train)
