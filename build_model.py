@@ -91,6 +91,33 @@ def clean_emp_title(df_column):
 
     return out_list
 
+def get_region(df_column):
+
+    out_list = []
+    
+    northeast = ['CT','NY','PA','NJ','OH','RI','MA','MD','VT','DC','NH','DE','ME']
+
+    south = ['GA','NC','TX','VA','MO','FL','KY','SC','LA','AL','KS','WV','MS','TN','AR']
+
+    midwest = ['IL','MN','WI','KS','MI','SD', 'MT','WY','OK','IA','NE','ID','IN','ND']
+
+    west = ['AZ','CA','OR','UT','WA','CO','NV','AK','NM','HI']
+
+    for s in df_column.values:
+
+        if s in northeast:
+            out_list.append('NORTHEAST')
+        elif s in south:
+            out_list.append('SOUTH')
+        elif s in midwest:
+            out_list.append('MIDWEST')
+        elif s in west:
+            out_list.append('WEST')
+        else:
+            out_list.append('OTHER')
+
+    return out_list
+
 def get_credit_history_len(issue_date,earliest_date):
 
     out_list = []
@@ -110,7 +137,7 @@ def get_dataset():
 
     import pickle
 
-    derived_var_list = ['credit_length','loan_amt_to_income','loan_amt_to_income_joint']
+    derived_var_list = ['credit_length','loan_amt_to_income','loan_amt_to_income_joint','region']
 
     df_paid = pickle.load(file('df_paid_subset.p'))
     df_paid['is_default_or_late'] = [0]*len(df_paid)
@@ -131,6 +158,8 @@ def get_dataset():
 
     df['loan_amt_to_income'] = df['loan_amnt']/df['annual_inc']
     df['loan_amt_to_income_joint'] = df['loan_amnt']/df['annual_inc_joint']
+
+    df['region'] = get_region(df['addr_state'])
 
     df['application_type'] = map(lambda x: int(x == 'INDIVIDUAL'),df['application_type'])
     
