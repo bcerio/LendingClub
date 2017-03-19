@@ -184,7 +184,7 @@ def get_dataset():
 
     #X_title,title_to_indy = one_hot_encode(df['emp_title'].values)
     X_reason,reason_to_indy = one_hot_encode(df['purpose'].values)
-    X_location,state_to_indy = one_hot_encode(df['addr_state'].values)
+    X_location,state_to_indy = one_hot_encode(df['region'].values)
     X_home,home_to_indy = one_hot_encode(df['home_ownership'].values)
 
     additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
