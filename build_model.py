@@ -70,14 +70,14 @@ def get_dataset():
 
     #X_title,title_to_indy = one_hot_encode(df['emp_title'].values)
     X_reason,reason_to_indy = one_hot_encode(df['purpose'].values)
+    X_location,state_to_indy = one_hot_encode(df['addr_state'].values)
 
-    print reason_to_indy
     additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
-    print additional_fields
-    print X_reason.shape
+    additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,state_to_indy[x]),state_to_indy.keys()),key=itemgetter(1)))
 
     X = df[input_fields].values
     X = np.concatenate((X,X_reason),axis=1)
+    X = np.concatenate((X,X_location),axis=1)
     input_fields = input_fields + additional_fields
     y = df['is_default_or_late'].values
 
