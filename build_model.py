@@ -91,6 +91,17 @@ def clean_emp_title(df_column):
 
     return out_list
 
+def get_credit_history_len(issue_date,earliest_date):
+
+    out_list = []
+
+    for i in xrange(len(issue_date)):
+
+        diff = issue_date[i] - earliest_date[i]
+        out_list.append(diff.year)
+
+    return out_list
+
 def get_dataset():
 
     import pickle
@@ -109,6 +120,8 @@ def get_dataset():
 
     df['emp_length'] = clean_emp_length(df['emp_length'])
     df['emp_title'] = clean_emp_title(df['emp_title'])
+
+    df['credit_length'] = get_credit_history_len(df['issue_d'].values,df['earliest_cr_line'].values)
     
     from eda import get_fields
     input_fields = get_fields()
