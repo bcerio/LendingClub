@@ -64,54 +64,85 @@ def plot_roc_curve(y_test,probs):
 
     return 1
 
+def clean_emp_length(df_column):
+
+    emp_length_list = []
+    for ss in df_column.values:
+
+        new_length = ss.rstrip('+ years').lstrip('< ')
+
+        if new_length == 'n/a':
+            new_length = 0
+
+        emp_length_list.append(int(new_length))
+
+    return emp_length_list        
+
+def clean_emp_title(df_column):
+
+    out_list = []
+
+    for tt in df_column.values:
+
+        if tt is None or np.isnan(tt) or tt == '' or tt == 'nan' or tt == 'NaN':
+            out_list.append(0)
+        else:
+            out_list.append(1)
+
+    return out_list
+
 def get_dataset():
 
     import pickle
 
     df_paid = pickle.load(file('df_paid_subset.p'))
     df_paid['is_default_or_late'] = [0]*len(df_paid)
-    print 'before drop',len(df_paid)
-    df_paid = df_paid.dropna()
-    print 'after drop',len(df_paid)
     df_not = pickle.load(file('df_notpaid_subset.p'))
     df_not['is_default_or_late'] = [1]*len(df_not)
-    print 'before drop',len(df_not)
-    df_not = df_not.dropna()
-    print 'after drop',len(df_not)  
-    print df_not['loan_status'].values[0:50]
 
+    df_paid = df_paid.sample(n=len(df_not))
+    df = pd.concat([df_paid,df_not])
+
+    ex_instance = df_paid.values[0]
+    for i in xrange(len(df_paid.columns)):
+        print df_paid.columns[i],ex_instance[i]
+
+    df['emp_length'] = clean_emp_length(df['emp_length'])
+    df['emp_title'] = clean_emp_title(df['emp_title'])
+    
     from eda import get_fields
-    input_fields = get_fields()    
+    input_fields = get_fields()
     
     good_fields = []
-    for col in df_paid.columns:
+    for col in df.columns:
 
-        if not ('float' in str(df_paid[col].dtype) or 'int' in str(df_paid[col].dtype)):
+        if not ('float' in str(df[col].dtype) or 'int' in str(df[col].dtype)):
             continue
 
         #df_temp = df_paid[col].dropna()
-
-        #if len(df_temp) == 0:
+        #if float(len(df_temp))/len(df_paid) < 0.15:
+        #    print 'removing %s since %s of data is missing from field' % (col,1-float(len(df_temp))/len(df_paid))
         #    continue
         
         good_fields.append(col)
 
     input_fields = list(set(input_fields) & set(good_fields))
 
-    df_paid = df_paid.sample(n=len(df_not))
-
-    df = pd.concat([df_paid,df_not])
-
     #X_title,title_to_indy = one_hot_encode(df['emp_title'].values)
     X_reason,reason_to_indy = one_hot_encode(df['purpose'].values)
     X_location,state_to_indy = one_hot_encode(df['addr_state'].values)
+    X_home,home_to_indy = one_hot_encode(df['home_ownership'].values)
 
     additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,state_to_indy[x]),state_to_indy.keys()),key=itemgetter(1)))
+    additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,home_to_indy[x]),home_to_indy.keys()),key=itemgetter(1)))
 
-    X = df[input_fields].values
+    df = df[input_fields+['is_default_or_late']].fillna(value=-1)
+    
+    X = df.values
     X = np.concatenate((X,X_reason),axis=1)
     X = np.concatenate((X,X_location),axis=1)
+    X = np.concatenate((X,X_home),axis=1)
     input_fields = input_fields + additional_fields
     y = df['is_default_or_late'].values
 
