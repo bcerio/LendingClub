@@ -70,8 +70,14 @@ def get_dataset():
 
     df_paid = pickle.load(file('df_paid_subset.p'))
     df_paid['is_default_or_late'] = [0]*len(df_paid)
+    print 'before drop',len(df_paid)
+    df_paid = df_paid.dropna()
+    print 'after drop',len(df_paid)
     df_not = pickle.load(file('df_notpaid_subset.p'))
     df_not['is_default_or_late'] = [1]*len(df_not)
+    print 'before drop',len(df_not)
+    df_not = df_not.dropna()
+    print 'after drop',len(df_not)  
     print df_not['loan_status'].values[0:50]
 
     from eda import get_fields
@@ -115,10 +121,11 @@ def main():
 
     X,y,headers = get_dataset()
 
-    imp = preprocessing.Imputer(missing_values='NaN', strategy='median', axis=0)
-    imp = imp.fit(X)
+    
+    #imp = preprocessing.Imputer(missing_values='NaN', strategy='median', axis=0)
+    #imp = imp.fit(X)
 
-    X = imp.transform(X)
+    #X = imp.transform(X)
     
     # split sample into random subsets for training and testing
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(X,y,test_size=0.75,random_state=42)
