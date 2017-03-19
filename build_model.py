@@ -137,14 +137,14 @@ def get_dataset():
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,state_to_indy[x]),state_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,home_to_indy[x]),home_to_indy.keys()),key=itemgetter(1)))
 
-    df = df[input_fields+['is_default_or_late']].fillna(value=-1)
+    y = df['is_default_or_late'].values
+    df = df[input_fields].fillna(value=-1)
     
     X = df.values
     X = np.concatenate((X,X_reason),axis=1)
     X = np.concatenate((X,X_location),axis=1)
     X = np.concatenate((X,X_home),axis=1)
     input_fields = input_fields + additional_fields
-    y = df['is_default_or_late'].values
 
     return X,y,input_fields
 
