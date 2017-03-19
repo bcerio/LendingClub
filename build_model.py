@@ -102,7 +102,7 @@ def get_credit_history_len(issue_date,earliest_date):
         id = datetime.datetime.strptime(issue_date[i],'%b-%Y')
         ed = datetime.datetime.strptime(earliest_date[i],'%b-%Y')
         diff = id - ed
-        out_list.append(diff.year)
+        out_list.append(float(diff.days)/365)
 
     return out_list
 
