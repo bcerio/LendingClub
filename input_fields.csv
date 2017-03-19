@@ -2,9 +2,9 @@ loan_amnt
 emp_title
 emp_length
 home_ownership
-credit_length
 annual_inc
 verification_status
+application_type
 desc
 purpose
 zip_code
@@ -20,6 +20,9 @@ pub_rec
 revol_bal
 revol_util
 total_acc
+annual_inc_joint
+dti_joint
+verification_status_joint
 acc_now_delinq
 tot_coll_amt
 tot_cur_bal

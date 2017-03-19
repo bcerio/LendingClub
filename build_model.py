@@ -110,6 +110,8 @@ def get_dataset():
 
     import pickle
 
+    derived_var_list = ['credit_length','loan_amt_to_income','loan_amt_to_income_joint']
+
     df_paid = pickle.load(file('df_paid_subset.p'))
     df_paid['is_default_or_late'] = [0]*len(df_paid)
     df_not = pickle.load(file('df_notpaid_subset.p'))
@@ -126,9 +128,15 @@ def get_dataset():
     df['emp_title'] = clean_emp_title(df['emp_title'])
 
     df['credit_length'] = get_credit_history_len(df['issue_d'].values,df['earliest_cr_line'].values)
+
+    df['loan_amt_to_income'] = df['loan_amnt']/df['annual_inc']
+    df['loan_amt_to_income_joint'] = df['loan_amnt']/df['annual_inc_joint']
+
+    df['application_type'] = map(lambda x: int(x == 'INDIVIDUAL'),df['application_type'])
     
     from eda import get_fields
     input_fields = get_fields()
+    input_fields += derived_var_list
     
     good_fields = []
     for col in df.columns:
