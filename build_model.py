@@ -72,6 +72,7 @@ def get_dataset():
     df_paid['is_default_or_late'] = [0]*len(df_paid)
     df_not = pickle.load(file('df_notpaid_subset.p'))
     df_not['is_default_or_late'] = [1]*len(df_not)
+    print df_not['loan_status'].values[0:50]
 
     from eda import get_fields
     input_fields = get_fields()    
