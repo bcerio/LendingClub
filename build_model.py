@@ -176,14 +176,14 @@ def main():
     #X = imp.transform(X)
     
     # split sample into random subsets for training and testing
-    X_train, X_test, y_train, y_test = cross_validation.train_test_split(X,y,test_size=0.75,random_state=42)
+    X_train, X_test, y_train, y_test = cross_validation.train_test_split(X,y,test_size=0.50,random_state=42)
 
     logger.log('Shape of training sample: %s' % str(X_train.shape))
     logger.log('Shape of test sample: %s' % str(X_test.shape))
 
     classifier = ensemble.RandomForestClassifier(verbose=0)
     
-    parameters = {'n_estimators':[50,100],'max_depth':[5,7,None],'criterion':['entropy']}
+    parameters = {'n_estimators':[50,100],'max_depth':[5,10,None],'criterion':['entropy']}
     opt_classifier = grid_search.GridSearchCV(classifier,parameters,verbose=1,n_jobs=8,scoring='recall')
 
     opt_classifier.fit(X_train,y_train)
