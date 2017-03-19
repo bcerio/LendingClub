@@ -16,11 +16,26 @@ from sklearn import grid_search
 from sklearn import ensemble
 from sklearn import metrics
 from sklearn import preprocessing
+from sklearn import feature_extraction
 
 sys.path.append(os.path.join(os.environ['ROOTDIR'],'shared_tools'))
 from logging_tools import Logger
 
+
 logger = Logger()
+
+def one_hot_encode(input_data):
+
+    input_list = []
+
+    for i in input_data:
+        temp_dict = {i:1}
+        input_list.append(temp_dict)
+    
+    dv = feature_extraction.DictVectorizer(sparse=False)
+    output_data = dv.fit_transform(input_list)
+
+    return output_data,dv.vocabulary_
 
 def get_dataset():
 
@@ -32,8 +47,7 @@ def get_dataset():
     df_not['is_default_or_late'] = [1]*len(df_not)
 
     from eda import get_fields
-    input_fields = get_fields()
-
+    input_fields = get_fields()    
     
     good_fields = []
     for col in df_paid.columns:
@@ -54,7 +68,17 @@ def get_dataset():
 
     df = pd.concat([df_paid,df_not])
 
+    #X_title,title_to_indy = one_hot_encode(df['emp_title'].values)
+    X_reason,reason_to_indy = one_hot_encode(df['purpose'].values)
+
+    print reason_to_indy
+    additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
+    print additional_fields
+    print X_reason.shape
+
     X = df[input_fields].values
+    X = np.concatenate((X,X_reason),axis=1)
+    input_fields = input_fields + additional_fields
     y = df['is_default_or_late'].values
 
     return X,y,input_fields
@@ -69,7 +93,7 @@ def main():
     X = imp.transform(X)
     
     # split sample into random subsets for training and testing
-    X_train, X_test, y_train, y_test = cross_validation.train_test_split(X,y,test_size=0.40,random_state=42)
+    X_train, X_test, y_train, y_test = cross_validation.train_test_split(X,y,test_size=0.75,random_state=42)
 
     logger.log('Shape of training sample: %s' % str(X_train.shape))
     logger.log('Shape of test sample: %s' % str(X_test.shape))
@@ -77,7 +101,7 @@ def main():
     classifier = ensemble.RandomForestClassifier(verbose=0)
     
     parameters = {'n_estimators':[50,100,250],'max_depth':[2,5,None],'criterion':['gini','entropy']}
-    opt_classifier = grid_search.GridSearchCV(classifier,parameters,verbose=1,n_jobs=8)
+    opt_classifier = grid_search.GridSearchCV(classifier,parameters,verbose=1,n_jobs=8,scoring='recall')
 
     opt_classifier.fit(X_train,y_train)
 
