@@ -2,6 +2,7 @@ loan_amnt
 emp_title
 emp_length
 home_ownership
+credit_length
 annual_inc
 verification_status
 desc
