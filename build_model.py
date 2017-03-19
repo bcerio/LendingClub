@@ -69,12 +69,12 @@ def clean_emp_length(df_column):
     emp_length_list = []
     for ss in df_column.values:
 
-        new_length = ss.rstrip('+ years').lstrip('< ')
-
         if new_length == 'n/a':
             new_length = 0
+        else:            
+            new_length = int(ss.rstrip('+ years').lstrip('< '))
 
-        emp_length_list.append(int(new_length))
+        emp_length_list.append(new_length)
 
     return emp_length_list        
 
