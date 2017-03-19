@@ -84,7 +84,7 @@ def clean_emp_title(df_column):
 
     for tt in df_column.values:
 
-        if tt is None or np.isnan(tt) or tt == '' or tt == 'nan' or tt == 'NaN':
+        if tt is None or tt == '' or tt == 'nan' or tt == 'NaN':
             out_list.append(0)
         else:
             out_list.append(1)
