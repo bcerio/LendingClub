@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+import matplotlib
+
+matplotlib.use('Agg')
+
 import sys
 import os
 import random
@@ -10,6 +14,8 @@ sys.setdefaultencoding('utf-8')
 
 import pandas as pd
 import numpy as np
+
+import matplotlib.pylab as plt
 
 from sklearn import cross_validation
 from sklearn import grid_search
@@ -36,6 +42,27 @@ def one_hot_encode(input_data):
     output_data = dv.fit_transform(input_list)
 
     return output_data,dv.vocabulary_
+
+def plot_roc_curve(y_test,probs):
+
+    from sklearn.metrics import roc_curve, auc
+    
+    fpr, tpr, thresholds = roc_curve(y_test,probs)
+    roc_auc = auc(fpr, tpr)
+
+    plt.clf()
+    plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.0])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic example')
+    plt.legend(loc="lower right")
+    plt.savefig('roc_curve.pdf')
+    plt.close()
+
+    return 1
 
 def get_dataset():
 
@@ -110,11 +137,14 @@ def main():
     logger.log('Score on hold-out: %s' % opt_classifier.score(X_test,y_test))
     logger.log('Accuracy score on hold-out: %s' % metrics.accuracy_score(y_test,opt_classifier.best_estimator_.predict(X_test)))    
 
-    for i in range(10):
-        rand_indy = random.randint(0,X_test.shape[0]-1)
-        logger.log('Predicted class: %s' % opt_classifier.predict([X_test[rand_indy]]))
-        logger.log('Actual class: %s' % y_test[rand_indy])
+    #for i in range(10):
+    #    rand_indy = random.randint(0,X_test.shape[0]-1)
+    #    logger.log('Predicted class: %s' % opt_classifier.predict([X_test[rand_indy]]))
+    #    logger.log('Actual class: %s' % y_test[rand_indy])
 
+    probs = opt_classifier.predict_proba(X_test)[:,1]
+    plot_roc_curve(y_test,probs)
+        
     logger.log('Feature importance')
     logger.log(' ')
     fi = sorted([(headers[i],imp) for i,imp in enumerate(opt_classifier.best_estimator_.feature_importances_)],key=itemgetter(1),reverse=True)
