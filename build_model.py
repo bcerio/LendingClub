@@ -134,6 +134,8 @@ def build_tfidf(df_column):
 
     import nltk
 
+    df_column = df_column.fillna(value='')
+
     tf_idf = feature_extraction.text.TfidfVectorizer(stop_words=nltk.corpus.stopwords.words('english'),
                                                      ngram_range=(1,1),
                                                      min_df=2,
