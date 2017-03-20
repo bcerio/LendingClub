@@ -140,6 +140,8 @@ def build_tfidf(df_column,do_svd=True,n_components=50):
     for dd in df_column.values:
         if 'Borrower added' in dd:
             dd_new = '>'.join(dd.split('>')[1:])
+        else:
+            dd_new = ''
         dd_new = dd_new.replace('<br>',' ')
         desc_cleaned.append(dd_new)
 
