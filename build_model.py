@@ -232,7 +232,7 @@ def get_dataset():
     additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,state_to_indy[x]),state_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,home_to_indy[x]),home_to_indy.keys()),key=itemgetter(1)))
-    additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,desc_vocab[x]),desc_vocab.keys()),key=itemgetter(1)))
+    additional_fields += map(lambda x: 'DESC_%s' % x[0],sorted(map(lambda x: (x,desc_vocab[x]),desc_vocab.keys()),key=itemgetter(1)))
 
     y = df['is_default_or_late'].values
     df = df[input_fields].fillna(value=-1)
