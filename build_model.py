@@ -238,12 +238,17 @@ def get_dataset():
     X_reason,reason_to_indy = one_hot_encode(df['purpose'].values)
     X_location,state_to_indy = one_hot_encode(df['region'].values)
     X_home,home_to_indy = one_hot_encode(df['home_ownership'].values)
-    X_desc,desc_vocab = build_tfidf(df['desc'],True,25)
+
+    nlp_svd = True
+    X_desc,desc_vocab = build_tfidf(df['desc'],nlp_svd,25)
 
     additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,state_to_indy[x]),state_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,home_to_indy[x]),home_to_indy.keys()),key=itemgetter(1)))
-    additional_fields += map(lambda x: 'DESC_%s' % x[0],sorted(map(lambda x: (x,desc_vocab[x]),desc_vocab.keys()),key=itemgetter(1)))
+    if not nlp_svd:
+        additional_fields += map(lambda x: 'DESC_%s' % x[0],sorted(map(lambda x: (x,desc_vocab[x]),desc_vocab.keys()),key=itemgetter(1)))
+    else:
+        additional_fields = map(lambda x: 'DESC_%s' % x,range(X_desc.shape[1]))
 
     y = df['is_default_or_late'].values
     df = df[input_fields].fillna(value=-1)
