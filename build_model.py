@@ -254,5 +254,5 @@ def main(do_svd=False):
     return 1
 
 if __name__ == '__main__':
-    main()
+    main(True)
 
