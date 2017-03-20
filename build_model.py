@@ -141,7 +141,7 @@ def build_tfidf(df_column):
                                                      min_df=2,
                                                      max_df=0.50,
                                                      norm='l2',
-                                                     tokenizer=LemmaTokenizer,
+                                                     tokenizer=LemmaTokenizer(),
                                                      max_features=100)
 
     X_desc = tf_idf.fit_transform(df_column.values)
