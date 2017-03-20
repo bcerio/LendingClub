@@ -211,7 +211,7 @@ def main(do_svd=False):
 
     if do_svd:
 
-        svd = decomposition.TruncatedSVD(n_features=25,random_state=44)
+        svd = decomposition.TruncatedSVD(n_components=25,random_state=44)
         X = fit_transform(X)
     
     #imp = preprocessing.Imputer(missing_values='NaN', strategy='median', axis=0)
