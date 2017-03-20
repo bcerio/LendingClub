@@ -153,7 +153,7 @@ def build_tfidf(df_column,do_svd=True,n_components=50):
                                                      max_df=0.50,
                                                      norm='l2',
                                                      tokenizer=LemmaTokenizer(),
-                                                     max_features=5000 if do_svd else n_components)
+                                                     max_features=1000 if do_svd else n_components)
 
     X_desc = tf_idf.fit_transform(desc_cleaned)
     X_desc = X_desc.toarray()
@@ -234,7 +234,7 @@ def get_dataset():
     X_reason,reason_to_indy = one_hot_encode(df['purpose'].values)
     X_location,state_to_indy = one_hot_encode(df['region'].values)
     X_home,home_to_indy = one_hot_encode(df['home_ownership'].values)
-    X_desc,desc_vocab = build_tfidf(df['desc'],True,50)
+    X_desc,desc_vocab = build_tfidf(df['desc'],True,25)
 
     additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,state_to_indy[x]),state_to_indy.keys()),key=itemgetter(1)))
