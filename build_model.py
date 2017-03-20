@@ -94,9 +94,11 @@ def clean_emp_title(df_column):
 
     out_list = []
 
+    df_column = df_column.fillna(value='')
+
     for tt in df_column.values:
 
-        if tt is None or tt == '' or tt == 'nan' or tt == 'NaN' or tt.lower() == 'self' or tt.lower() == 'none':
+        if tt == '' or tt.lower() == 'self' or tt.lower() == 'none':
             out_list.append(0)
         else:
             out_list.append(1)
