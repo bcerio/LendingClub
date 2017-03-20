@@ -134,11 +134,17 @@ def build_tfidf(df_column):
 
     import nltk
 
-    tf_idf = feature_extraction.text.TfidfVectorizer(stop_words=nltk.corpus.stopwords.words('english'),ngram_range=(1,1),min_df=2,max_df=0.50,norm='l2',tokenizer=LemmaTokenizer,max_features=100)
+    tf_idf = feature_extraction.text.TfidfVectorizer(stop_words=nltk.corpus.stopwords.words('english'),
+                                                     ngram_range=(1,1),
+                                                     min_df=2,
+                                                     max_df=0.50,
+                                                     norm='l2',
+                                                     tokenizer=LemmaTokenizer,
+                                                     max_features=100)
 
     X_desc = tf_idf.fit_transform(df_column.values)
 
-    return X_desc
+    return X_desc,tf_idf.vocabulary_
 
 def get_credit_history_len(issue_date,earliest_date):
 
@@ -210,10 +216,12 @@ def get_dataset():
     X_reason,reason_to_indy = one_hot_encode(df['purpose'].values)
     X_location,state_to_indy = one_hot_encode(df['region'].values)
     X_home,home_to_indy = one_hot_encode(df['home_ownership'].values)
+    X_desc,desc_vocab = build_tfidf(df['desc'])
 
     additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,state_to_indy[x]),state_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,home_to_indy[x]),home_to_indy.keys()),key=itemgetter(1)))
+    additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,desc_vocab[x]),desc_vocab.keys()),key=itemgetter(1)))
 
     y = df['is_default_or_late'].values
     df = df[input_fields].fillna(value=-1)
@@ -222,6 +230,8 @@ def get_dataset():
     X = np.concatenate((X,X_reason),axis=1)
     X = np.concatenate((X,X_location),axis=1)
     X = np.concatenate((X,X_home),axis=1)
+    X = np.concatenate((X,X_desc),axis=1)
+    
     input_fields = input_fields + additional_fields
 
     return X,y,input_fields
@@ -275,5 +285,5 @@ def main(do_svd=False):
     return 1
 
 if __name__ == '__main__':
-    main(True)
+    main()
 
