@@ -31,6 +31,17 @@ from logging_tools import Logger
 
 logger = Logger()
 
+from nltk.tokenize import RegexpTokenizer
+from nltk.stem import WordNetLemmatizer
+
+class LemmaTokenizer(object):
+    def __init__(self):
+        self.wnl = WordNetLemmatizer()
+    def __call__(self, doc):
+        tokenizer = RegexpTokenizer(r'\w+')
+        word_vec = tokenizer.tokenize(doc)
+        return [self.wnl.lemmatize(t) for i,t in enumerate(word_vec)]
+
 def one_hot_encode(input_data):
 
     input_list = []
@@ -118,6 +129,16 @@ def get_region(df_column):
             out_list.append('OTHER')
 
     return out_list
+
+def build_tfidf(df_column):
+
+    import nltk
+
+    tf_idf = feature_extraction.text.TfidfVectorizer(stop_words=nltk.corpus.stopwords.words('english'),ngram_range=(1,1),min_df=2,max_df=0.50,norm='l2',tokenizer=LemmaTokenizer,max_features=100)
+
+    X_desc = tf_idf.fit_transform(df_column.values)
+
+    return X_desc
 
 def get_credit_history_len(issue_date,earliest_date):
 
@@ -211,7 +232,7 @@ def main(do_svd=False):
 
     if do_svd:
 
-        svd = decomposition.TruncatedSVD(n_components=25,random_state=44)
+        svd = decomposition.TruncatedSVD(n_components=15,random_state=44)
         X = svd.fit_transform(X)
     
     #imp = preprocessing.Imputer(missing_values='NaN', strategy='median', axis=0)
@@ -227,7 +248,7 @@ def main(do_svd=False):
 
     classifier = ensemble.RandomForestClassifier(verbose=0)
     
-    parameters = {'n_estimators':[50,100,200,500],'max_depth':[5,10,15,20,None],'criterion':['entropy']}
+    parameters = {'n_estimators':[50,100,200,500],'max_depth':[5,10,None],'criterion':['entropy']}
     opt_classifier = grid_search.GridSearchCV(classifier,parameters,verbose=1,n_jobs=8,scoring='recall')
 
     opt_classifier.fit(X_train,y_train)
