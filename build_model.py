@@ -145,6 +145,7 @@ def build_tfidf(df_column):
                                                      max_features=100)
 
     X_desc = tf_idf.fit_transform(df_column.values)
+    X_desc = X_desc.toarray()
 
     return X_desc,tf_idf.vocabulary_
 
