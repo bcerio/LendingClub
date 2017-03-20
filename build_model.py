@@ -147,6 +147,8 @@ def build_tfidf(df_column,do_svd=True,n_components=50):
 
     stop_words = nltk.corpus.stopwords.words('english')
     stop_words += map(str,range(0,20))
+    stop_words += map(str,range(1900,2020))
+    stop_words += map(lambda x: '0%s' % x,range(1,10))
     stop_words += ['00','000']
 
     tf_idf = feature_extraction.text.TfidfVectorizer(stop_words=stop_words,
