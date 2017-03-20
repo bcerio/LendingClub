@@ -11,7 +11,7 @@ import pickle
 
 def main():
 
-    df = pd.read_csv('loan.csv',header=0)
+    df = read_csv('loan.csv',header=0)
     status_list = list(df['loan_status'].unique())
 
     print 'Number of loans in dataset: %s' % len(df)
