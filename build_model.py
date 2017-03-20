@@ -130,22 +130,30 @@ def get_region(df_column):
 
     return out_list
 
-def build_tfidf(df_column):
+def build_tfidf(df_column,do_svd=True,n_components=50):
 
     import nltk
 
     df_column = df_column.fillna(value='')
 
-    tf_idf = feature_extraction.text.TfidfVectorizer(stop_words=nltk.corpus.stopwords.words('english'),
-                                                     ngram_range=(1,1),
-                                                     min_df=2,
+    stop_words = nltk.corpus.stopwords.words('english')
+    stop_words += map(str,range(0,20))
+    stop_words += ['00','000']
+
+    tf_idf = feature_extraction.text.TfidfVectorizer(stop_words=stop_words,
+                                                     ngram_range=(1,2),
+                                                     min_df=3,
                                                      max_df=0.50,
                                                      norm='l2',
                                                      tokenizer=LemmaTokenizer(),
-                                                     max_features=100)
+                                                     max_features=5000 if do_svd else n_components)
 
     X_desc = tf_idf.fit_transform(df_column.values)
     X_desc = X_desc.toarray()
+
+    if do_svd:
+        svd = decomposition.TruncatedSVD(n_components=n_components,random_state=44)
+        X_desc = svd.fit_transform(X_desc)
 
     return X_desc,tf_idf.vocabulary_
 
@@ -219,7 +227,7 @@ def get_dataset():
     X_reason,reason_to_indy = one_hot_encode(df['purpose'].values)
     X_location,state_to_indy = one_hot_encode(df['region'].values)
     X_home,home_to_indy = one_hot_encode(df['home_ownership'].values)
-    X_desc,desc_vocab = build_tfidf(df['desc'])
+    X_desc,desc_vocab = build_tfidf(df['desc'],True,50)
 
     additional_fields = map(lambda x: x[0],sorted(map(lambda x: (x,reason_to_indy[x]),reason_to_indy.keys()),key=itemgetter(1)))
     additional_fields += map(lambda x: x[0],sorted(map(lambda x: (x,state_to_indy[x]),state_to_indy.keys()),key=itemgetter(1)))
