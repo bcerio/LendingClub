@@ -250,7 +250,7 @@ def get_dataset():
     if not nlp_svd:
         additional_fields += map(lambda x: 'DESC_%s' % x[0],sorted(map(lambda x: (x,desc_vocab[x]),desc_vocab.keys()),key=itemgetter(1)))
     else:
-        additional_fields = map(lambda x: 'DESC_%s' % x,range(X_desc.shape[1]))
+        additional_fields += map(lambda x: 'DESC_%s' % x,range(X_desc.shape[1]))
 
     y = df['is_default_or_late'].values
     df = df[input_fields].fillna(value=-1)
