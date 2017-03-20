@@ -23,6 +23,7 @@ from sklearn import ensemble
 from sklearn import metrics
 from sklearn import preprocessing
 from sklearn import feature_extraction
+from sklearn import decomposition
 
 sys.path.append(os.path.join(os.environ['ROOTDIR'],'shared_tools'))
 from logging_tools import Logger
@@ -204,10 +205,14 @@ def get_dataset():
 
     return X,y,input_fields
 
-def main():
+def main(do_svd=False):
 
     X,y,headers = get_dataset()
 
+    if do_svd:
+
+        svd = decomposition.TruncatedSVD(n_features=25,random_state=44)
+        X = fit_transform(X)
     
     #imp = preprocessing.Imputer(missing_values='NaN', strategy='median', axis=0)
     #imp = imp.fit(X)
