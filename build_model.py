@@ -162,6 +162,8 @@ def get_dataset():
     df['region'] = get_region(df['addr_state'])
 
     df['application_type'] = map(lambda x: int(x == 'INDIVIDUAL'),df['application_type'])
+
+    df['verification_status'] = map(lambda x: int(x == 'Verified' or x == 'Source Verified'),df['verification_status'])
     
     from eda import get_fields
     input_fields = get_fields()
