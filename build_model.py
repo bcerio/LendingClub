@@ -135,6 +135,13 @@ def build_tfidf(df_column,do_svd=True,n_components=50):
     import nltk
 
     df_column = df_column.fillna(value='')
+    desc_cleaned = []
+    
+    for dd in df_column.values:
+        if 'Borrower added' in dd:
+            dd_new = '>'.join(dd.split('>')[1:])
+        dd_new = dd_new.replace('<br>',' ')
+        desc_cleaned.append(dd_new)
 
     stop_words = nltk.corpus.stopwords.words('english')
     stop_words += map(str,range(0,20))
@@ -148,7 +155,7 @@ def build_tfidf(df_column,do_svd=True,n_components=50):
                                                      tokenizer=LemmaTokenizer(),
                                                      max_features=5000 if do_svd else n_components)
 
-    X_desc = tf_idf.fit_transform(df_column.values)
+    X_desc = tf_idf.fit_transform(desc_cleaned)
     X_desc = X_desc.toarray()
 
     if do_svd:
